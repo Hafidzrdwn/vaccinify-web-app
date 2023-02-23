@@ -17,7 +17,7 @@ class RegionalSeeder extends Seeder
     {
         $provinces = [
             'Jakarta' => ['Jakarta Timur', 'Jakarta Barat'],
-            'Jawa Timur' => ['Surabaya', 'Sidoarjo', 'Jombang', 'Ponorogo'],
+            'Jawa Timur' => ['Surabaya', 'Sidoarjo', 'Jombang', 'Ponorogo', 'Malang'],
             'Jawa Barat' => ['Bandung'],
             'Bali' => ['Bali'],
             'Sumatera' => ['Padang'],

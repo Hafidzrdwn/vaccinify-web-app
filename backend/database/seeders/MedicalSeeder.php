@@ -15,41 +15,14 @@ class MedicalSeeder extends Seeder
      */
     public function run()
     {
-        Medical::create([
-            'spot_id' => 1,
-            'user_id' => 1,
-            'role' => 'doctor',
-            'name' => 'Dr. Indah Kusumawati'
-        ]);
-        Medical::create([
-            'spot_id' => 1,
-            'user_id' => 2,
-            'role' => 'officer',
-            'name' => 'Ismail bin Mail'
-        ]);
-        Medical::create([
-            'spot_id' => 2,
-            'user_id' => 3,
-            'role' => 'doctor',
-            'name' => 'Dr. Intan Putri'
-        ]);
-        Medical::create([
-            'spot_id' => 2,
-            'user_id' => 4,
-            'role' => 'officer',
-            'name' => 'Enggar Widagdo'
-        ]);
-        Medical::create([
-            'spot_id' => 3,
-            'user_id' => 5,
-            'role' => 'doctor',
-            'name' => 'Dr. Vanya'
-        ]);
-        Medical::create([
-            'spot_id' => 3,
-            'user_id' => 6,
-            'role' => 'officer',
-            'name' => 'Kevin Ilham'
-        ]);
+        $role = ['doctor', 'officer'];
+        for ($i = 1; $i <= 7; $i++) {
+            Medical::create([
+                'spot_id' => rand(1, 15),
+                'user_id' => rand(1, 7),
+                'role' => $role[rand(0, 1)],
+                'name' => fake()->name()
+            ]);
+        }
     }
 }

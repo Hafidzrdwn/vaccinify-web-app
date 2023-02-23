@@ -23,12 +23,13 @@ class DatabaseSeeder extends Seeder
 
         return $this->call([
             UserSeeder::class,
-            VaccineSeeder::class,
             RegionalSeeder::class,
-            SocietySeeder::class,
             SpotSeeder::class,
+            SocietySeeder::class,
             MedicalSeeder::class,
+            VaccineSeeder::class,
             SpotVaccineSeeder::class,
+            ConsultationSeeder::class,
         ]);
     }
 }

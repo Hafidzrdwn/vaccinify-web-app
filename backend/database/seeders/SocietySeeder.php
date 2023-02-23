@@ -16,41 +16,17 @@ class SocietySeeder extends Seeder
      */
     public function run()
     {
-        Society::create([
-            'id_card_number' => '240703085',
-            'password' => Hash::make('password'),
-            'name' => 'Sri Indah Martini',
-            'born_date' => now(),
-            'gender' => 'female',
-            'address' => 'Jln. wiyung utara gang anggrek no.4',
-            'regional_id' => 3,
-        ]);
-        Society::create([
-            'id_card_number' => '280102085',
-            'password' => Hash::make('password'),
-            'name' => 'Rosalina Dewi Anggarita',
-            'born_date' => now(),
-            'gender' => 'female',
-            'address' => 'Perum. Griya Indah Blok.H/27',
-            'regional_id' => 4,
-        ]);
-        Society::create([
-            'id_card_number' => '142701089',
-            'password' => Hash::make('password'),
-            'name' => 'Bagus Prawicaksono',
-            'born_date' => now(),
-            'gender' => 'male',
-            'address' => 'Jln. bandung bergelombang gang mangga no.4',
-            'regional_id' => 7,
-        ]);
-        Society::create([
-            'id_card_number' => '220113088',
-            'password' => Hash::make('password'),
-            'name' => 'Bambang Restu',
-            'born_date' => now(),
-            'gender' => 'male',
-            'address' => 'Jln. jombang beriman',
-            'regional_id' => 5,
-        ]);
+        $gender = ['male', 'female'];
+        for ($i = 1; $i <= 10; $i++) {
+            Society::create([
+                'id_card_number' => fake()->randomNumber(9, true),
+                'password' => Hash::make('password'),
+                'name' => fake()->name(),
+                'born_date' => fake()->date(),
+                'gender' => $gender[rand(0, 1)],
+                'address' => fake()->address(),
+                'regional_id' => rand(1, 11),
+            ]);
+        }
     }
 }

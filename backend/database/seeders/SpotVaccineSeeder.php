@@ -15,33 +15,11 @@ class SpotVaccineSeeder extends Seeder
      */
     public function run()
     {
-        SpotVaccine::create([
-            'spot_id' => '1',
-            'vaccine_id' => '1'
-        ]);
-        SpotVaccine::create([
-            'spot_id' => '2',
-            'vaccine_id' => '2'
-        ]);
-        SpotVaccine::create([
-            'spot_id' => '3',
-            'vaccine_id' => '3'
-        ]);
-        SpotVaccine::create([
-            'spot_id' => '4',
-            'vaccine_id' => '1'
-        ]);
-        SpotVaccine::create([
-            'spot_id' => '5',
-            'vaccine_id' => '2'
-        ]);
-        SpotVaccine::create([
-            'spot_id' => '6',
-            'vaccine_id' => '3'
-        ]);
-        SpotVaccine::create([
-            'spot_id' => '7',
-            'vaccine_id' => '1'
-        ]);
+        for ($i = 1; $i <= 20; $i++) {
+            SpotVaccine::create([
+                'spot_id' => rand(1, 15),
+                'vaccine_id' => rand(1, 3)
+            ]);
+        }
     }
 }

@@ -16,29 +16,11 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        User::create([
-            'username' => 'indah',
-            'password' => Hash::make('password')
-        ]);
-        User::create([
-            'username' => 'ismail',
-            'password' => Hash::make('password')
-        ]);
-        User::create([
-            'username' => 'intan',
-            'password' => Hash::make('password')
-        ]);
-        User::create([
-            'username' => 'enggar',
-            'password' => Hash::make('password')
-        ]);
-        User::create([
-            'username' => 'vanya',
-            'password' => Hash::make('password')
-        ]);
-        User::create([
-            'username' => 'kevin',
-            'password' => Hash::make('password')
-        ]);
+        for ($i = 1; $i <= 7; $i++) {
+            User::create([
+                'username' => fake()->userName(),
+                'password' => Hash::make('password')
+            ]);
+        }
     }
 }

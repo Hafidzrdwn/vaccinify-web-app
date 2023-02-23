@@ -46,6 +46,7 @@ class VaccinationController extends Controller
 
 
         $spot_vaccine = SpotVaccine::where('spot_id', $request->spot_id)->first();
+        // $spot = Spot::where()
         $vaccine = Vaccine::where('id', $spot_vaccine->vaccine_id)->first();
         $data = $request->all();
 

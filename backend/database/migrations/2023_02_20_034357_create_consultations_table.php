@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('society_id')->constrained('societies')->cascadeOnDelete()->cascadeOnUpdate();
             $table->unsignedBigInteger('doctor_id')->nullable();
             $table->foreign('doctor_id')->references('id')->on('medicals')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->enum('status', ['accepted', 'declined', 'pending'])->default('pending');
+            $table->enum('status', ['accepted', 'rejected', 'pending'])->default('pending');
             $table->text('disease_history')->nullable();
             $table->text('current_symptoms')->nullable();
             $table->text('doctor_notes')->nullable();
