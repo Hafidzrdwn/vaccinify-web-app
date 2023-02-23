@@ -45,8 +45,8 @@ class VaccinationController extends Controller
         ])->first()->id;
 
 
-        $spot_vaccine = SpotVaccine::where('spot_id', $request->spot_id)->first();
-        // $spot = Spot::where()
+        $spot = Spot::find($request->spot_id);
+        $spot_vaccine = SpotVaccine::where('spot_id', $spot->id)->first();
         $vaccine = Vaccine::where('id', $spot_vaccine->vaccine_id)->first();
         $data = $request->all();
 
@@ -71,41 +71,55 @@ class VaccinationController extends Controller
                                 'message' => "Your Second consultation must be accepted by doctor before"
                             ], 401);
                         } else {
-                            $first_vaccination = Vaccination::where('society_id', $society->id)->first();
-                            $second_vaccination_date = Carbon::parse($request->date);
-                            $date_diff = $second_vaccination_date->diffInDays(Carbon::parse($first_vaccination->date));
 
-                            if ($date_diff >= 30) {
-                                $data['dose'] = 2;
-                                $data['society_id'] = $society->id;
-                                $data['vaccine_id'] = $vaccine->id;
-                                $data['doctor_id'] = $doctor_id;
-                                $data['officer_id'] = $officer_id;
+                            if ($spot->serve == 2 || $spot->serve == 3) {
+                                $first_vaccination = Vaccination::where('society_id', $society->id)->first();
+                                $second_vaccination_date = Carbon::parse($request->date);
+                                $date_diff = $second_vaccination_date->diffInDays(Carbon::parse($first_vaccination->date));
 
-                                Vaccination::create($data);
+                                if ($date_diff >= 30) {
+                                    $data['dose'] = 2;
+                                    $data['society_id'] = $society->id;
+                                    $data['vaccine_id'] = $vaccine->id;
+                                    $data['doctor_id'] = $doctor_id;
+                                    $data['officer_id'] = $officer_id;
 
-                                return response()->json([
-                                    'message' => "Second vaccination registered successful"
-                                ], 200);
+                                    Vaccination::create($data);
+
+                                    return response()->json([
+                                        'message' => "Second vaccination registered successful"
+                                    ], 200);
+                                } else {
+                                    return response()->json([
+                                        'message' => "Wait at least +30 days from 1st Vaccination"
+                                    ], 401);
+                                }
                             } else {
                                 return response()->json([
-                                    'message' => "Wait at least +30 days from 1st Vaccination"
+                                    'message' => "Second Dose Vaccination is not available at your chosen spot"
                                 ], 401);
                             }
                         }
                     }
                 } else {
-                    $data['dose'] = 1;
-                    $data['society_id'] = $society->id;
-                    $data['vaccine_id'] = $vaccine->id;
-                    $data['doctor_id'] = $doctor_id;
-                    $data['officer_id'] = $officer_id;
 
-                    Vaccination::create($data);
+                    if ($spot->serve == 1 || $spot->serve == 3) {
+                        $data['dose'] = 1;
+                        $data['society_id'] = $society->id;
+                        $data['vaccine_id'] = $vaccine->id;
+                        $data['doctor_id'] = $doctor_id;
+                        $data['officer_id'] = $officer_id;
 
-                    return response()->json([
-                        'message' => "First vaccination registered successful"
-                    ], 200);
+                        Vaccination::create($data);
+
+                        return response()->json([
+                            'message' => "First vaccination registered successful"
+                        ], 200);
+                    } else {
+                        return response()->json([
+                            'message' => "First Dose Vaccination is not available at your chosen spot"
+                        ], 401);
+                    }
                 }
             } else {
                 return response()->json([
@@ -161,7 +175,11 @@ class VaccinationController extends Controller
         return response()->json([
             'vaccinations' => [
                 'first' => $first,
-                'second' => $second
+                'second' => $second,
+                'count' => [
+                    'first' => $first_vaccinations->count(),
+                    'second' => $second_vaccinations->count()
+                ]
             ]
         ], 200);
     }
