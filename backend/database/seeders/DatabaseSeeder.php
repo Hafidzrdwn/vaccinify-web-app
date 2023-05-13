@@ -21,15 +21,15 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        return $this->call([
-            UserSeeder::class,
-            RegionalSeeder::class,
-            SpotSeeder::class,
-            SocietySeeder::class,
-            MedicalSeeder::class,
-            VaccineSeeder::class,
-            SpotVaccineSeeder::class,
-            ConsultationSeeder::class,
-        ]);
+        // return $this->call([
+        //     UserSeeder::class,
+        //     RegionalSeeder::class,
+        //     SpotSeeder::class,
+        //     SocietySeeder::class,
+        //     MedicalSeeder::class,
+        //     VaccineSeeder::class,
+        //     SpotVaccineSeeder::class,
+        //     ConsultationSeeder::class,
+        // ]);
     }
 }

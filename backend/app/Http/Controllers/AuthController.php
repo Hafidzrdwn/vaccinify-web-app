@@ -25,9 +25,7 @@ class AuthController extends Controller
         $society = Society::with('regional')->where('id_card_number', $request->id_card_number)->first();
 
         if ($society) {
-
-            if (Hash::check($request->password, $society->password)) {
-
+            if ($request->password == $society->password) {
                 $society->update([
                     'login_tokens' => $society->makeToken()
                 ]);

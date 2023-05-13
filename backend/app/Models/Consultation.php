@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Consultation extends Model
 {
     use HasFactory;
-    protected $guarded = ['id'];
-    protected $hidden = [
-        'created_at',
-        'updated_at'
-    ];
+    protected $table = 'consultations';
+    protected $hidden = ['society_id', 'doctor_id'];
+    public $timestamps = false;
+
+    protected $with = ['doctor'];
 
     public function doctor()
     {

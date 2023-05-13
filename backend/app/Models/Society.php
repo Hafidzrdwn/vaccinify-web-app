@@ -13,11 +13,10 @@ class Society extends Model
         'id',
         'id_card_number',
         'password',
-        'created_at',
-        'updated_at',
         'regional_id',
         'login_tokens'
     ];
+    public $timestamps = false;
 
     public function regional()
     {

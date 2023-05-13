@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Medical extends Model
 {
     use HasFactory;
+    protected $table = 'medicals';
 
     protected $hidden = [
         'spot_id',

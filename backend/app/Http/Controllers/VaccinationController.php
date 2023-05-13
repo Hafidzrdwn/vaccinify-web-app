@@ -17,9 +17,19 @@ class VaccinationController extends Controller
 {
     public function register(Request $request)
     {
+        $society = Society::where('login_tokens', $request->query('token'))->first();
+
+        if (!$society) {
+            return response()->json([
+                'message' => 'Unauthorized user'
+            ], 401);
+        }
+
         $validated = Validator::make($request->all(), [
             'spot_id' => 'required',
             'date' => 'required|date'
+        ], [
+            'date' => 'The date does not match the format Y-m-d.'
         ]);
 
         if ($validated->fails()) {
@@ -29,10 +39,7 @@ class VaccinationController extends Controller
             ], 401);
         }
 
-        $society = Society::where('login_tokens', $request->query('token'))->first();
         $consultation = Consultation::where('society_id', $society->id)->first();
-
-        $total_consultation = Consultation::where('society_id', $society->id)->get()->count();
         $total_vaccine = Vaccination::where('society_id', $society->id)->get()->count();
 
         $doctor_id = Medical::where([
@@ -50,16 +57,6 @@ class VaccinationController extends Controller
         $vaccine = Vaccine::where('id', $spot_vaccine->vaccine_id)->first();
         $data = $request->all();
 
-        if ($total_vaccine < 1 && ($spot->serve == 1 || $spot->serve == 3)) {
-            return response()->json([
-                'message' => "First Dose Vaccination is not available at your chosen spot"
-            ], 401);
-        } else if ($total_vaccine == 1 && ($spot->serve == 2 || $spot->serve == 3)) {
-            return response()->json([
-                'message' => "Second Dose Vaccination is not available at your chosen spot"
-            ], 401);
-        }
-
         if ($consultation) {
             if ($consultation->status == 'accepted') {
 
@@ -69,40 +66,26 @@ class VaccinationController extends Controller
                     ], 401);
                 } else if ($total_vaccine == 1) {
 
-                    if ($total_consultation < 2) {
+                    $first_vaccination = Vaccination::where('society_id', $society->id)->first();
+                    $second_vaccination_date = Carbon::parse($request->date);
+                    $date_diff = $second_vaccination_date->diffInDays(Carbon::parse($first_vaccination->date));
+
+                    if ($date_diff >= 30) {
+                        $data['dose'] = 2;
+                        $data['society_id'] = $society->id;
+                        $data['vaccine_id'] = $vaccine->id;
+                        $data['doctor_id'] = $doctor_id;
+                        $data['officer_id'] = $officer_id;
+
+                        Vaccination::create($data);
+
                         return response()->json([
-                            'message' => "To register for second vaccination, you must consult a doctor first."
-                        ], 401);
+                            'message' => "Second vaccination registered successful"
+                        ], 200);
                     } else {
-                        $second_consult = Consultation::where(['society_id' => $society->id, 'status' => 'pending'])->latest()->first();
-
-                        if ($second_consult) {
-                            return response()->json([
-                                'message' => "Your Second consultation must be accepted by doctor before"
-                            ], 401);
-                        } else {
-                            $first_vaccination = Vaccination::where('society_id', $society->id)->first();
-                            $second_vaccination_date = Carbon::parse($request->date);
-                            $date_diff = $second_vaccination_date->diffInDays(Carbon::parse($first_vaccination->date));
-
-                            if ($date_diff >= 30) {
-                                $data['dose'] = 2;
-                                $data['society_id'] = $society->id;
-                                $data['vaccine_id'] = $vaccine->id;
-                                $data['doctor_id'] = $doctor_id;
-                                $data['officer_id'] = $officer_id;
-
-                                Vaccination::create($data);
-
-                                return response()->json([
-                                    'message' => "Second vaccination registered successful"
-                                ], 200);
-                            } else {
-                                return response()->json([
-                                    'message' => "Wait at least +30 days from 1st Vaccination"
-                                ], 401);
-                            }
-                        }
+                        return response()->json([
+                            'message' => "Wait at least +30 days from 1st Vaccination"
+                        ], 401);
                     }
                 } else {
                     $data['dose'] = 1;
@@ -122,16 +105,17 @@ class VaccinationController extends Controller
                     'message' => "Your consultation must be accepted by doctor before"
                 ], 401);
             }
-        } else {
-            return response()->json([
-                'message' => "You must consultation first before register to the vaccination"
-            ], 401);
         }
     }
 
     public function get_vaccinations(Request $request)
     {
         $society = Society::where('login_tokens', $request->query('token'))->first();
+        if (!$society) {
+            return response()->json([
+                'message' => 'Unauthorized user'
+            ], 401);
+        }
 
         $first = Vaccination::query()->with(['spot.regional', 'vaccine', 'vaccinator'])->where([
             'society_id' => $society->id,
@@ -142,13 +126,13 @@ class VaccinationController extends Controller
             'dose' => 2
         ])->first();
 
-        $first_vaccinations = Vaccination::where('dose', 1)->orderBy('created_at', 'asc')->get();
-        $second_vaccinations = Vaccination::where('dose', 2)->orderBy('created_at', 'asc')->get();
+        $first_vaccinations = Vaccination::where('dose', 1)->orderBy('id', 'asc')->get();
+        $second_vaccinations = Vaccination::where('dose', 2)->orderBy('id', 'asc')->get();
 
         if ($first) {
 
             $first['vaccination_date'] = $first->date;
-            $first['status'] = 'done';
+            $first['status'] = ($first['vaccine'] && $first['vaccinator']) ? 'done' : 'registered';
 
             $fqueue = $first_vaccinations->search(function ($fv) use ($society) {
                 return $fv->society_id == $society->id;
@@ -159,7 +143,7 @@ class VaccinationController extends Controller
         if ($second) {
 
             $second['vaccination_date'] = $second->date;
-            $second['status'] = 'done';
+            $second['status'] = ($second['vaccine'] && $second['vaccinator']) ? 'done' : 'registered';
 
             $squeue = $second_vaccinations->search(function ($sv) use ($society) {
                 return $sv->society_id == $society->id;
@@ -171,11 +155,7 @@ class VaccinationController extends Controller
         return response()->json([
             'vaccinations' => [
                 'first' => $first,
-                'second' => $second,
-                'count' => [
-                    'first' => $first_vaccinations->count(),
-                    'second' => $second_vaccinations->count()
-                ]
+                'second' => $second
             ]
         ], 200);
     }

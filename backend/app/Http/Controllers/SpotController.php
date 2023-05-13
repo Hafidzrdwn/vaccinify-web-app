@@ -16,9 +16,15 @@ class SpotController extends Controller
     {
         $society = Society::with('regional')->where('login_tokens', $request->query('token'))->first();
         $spots = Spot::where('regional_id', $society->regional->id)->get();
-        $total_vaccinations = Vaccination::where('society_id', $society->id)->get()->count();
+        // $total_vaccinations = Vaccination::where('society_id', $society->id)->get()->count();
         $vaccines = Vaccine::all();
         $available_vaccines = [];
+
+        if (!$society) {
+            return response()->json([
+                'message' => 'Unauthorized user'
+            ], 401);
+        }
 
         foreach ($spots as $spot) {
 
@@ -33,9 +39,9 @@ class SpotController extends Controller
                 $available_vaccines[$vaccine->name] = $available;
             }
 
-            if ($spot->serve != $total_vaccinations) {
-                $spot['unavailable'] = true;
-            }
+            // if ($spot->serve != $total_vaccinations) {
+            //     $spot['unavailable'] = true;
+            // }
 
             $spot['available_vaccines'] = $available_vaccines;
         }
@@ -47,6 +53,13 @@ class SpotController extends Controller
 
     public function show_spot(Request $request, Spot $spot)
     {
+        $society = Society::with('regional')->where('login_tokens', $request->query('token'))->first();
+        if (!$society) {
+            return response()->json([
+                'message' => 'Unauthorized user'
+            ], 401);
+        }
+
         $date = ($request->date) ? $request->date : now();
 
         $vaccination_count = Vaccination::where([
