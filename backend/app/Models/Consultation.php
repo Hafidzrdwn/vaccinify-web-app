@@ -8,10 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Consultation extends Model
 {
     use HasFactory;
-    protected $table = 'consultations';
     protected $hidden = ['society_id', 'doctor_id'];
+    protected $guarded = ['id'];
     public $timestamps = false;
-
     protected $with = ['doctor'];
 
     public function doctor()

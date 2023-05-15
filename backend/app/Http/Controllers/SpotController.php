@@ -16,7 +16,7 @@ class SpotController extends Controller
     {
         $society = Society::with('regional')->where('login_tokens', $request->query('token'))->first();
         $spots = Spot::where('regional_id', $society->regional->id)->get();
-        // $total_vaccinations = Vaccination::where('society_id', $society->id)->get()->count();
+        $total_vaccinations = Vaccination::where('society_id', $society->id)->get()->count();
         $vaccines = Vaccine::all();
         $available_vaccines = [];
 
@@ -39,9 +39,9 @@ class SpotController extends Controller
                 $available_vaccines[$vaccine->name] = $available;
             }
 
-            // if ($spot->serve != $total_vaccinations) {
-            //     $spot['unavailable'] = true;
-            // }
+            if (($spot->serve == 1 && $total_vaccinations == 1) || ($spot->serve == 2 && $total_vaccinations < 1)) {
+                $spot['unavailable'] = true;
+            }
 
             $spot['available_vaccines'] = $available_vaccines;
         }
@@ -63,7 +63,7 @@ class SpotController extends Controller
         $date = ($request->date) ? $request->date : now();
 
         $vaccination_count = Vaccination::where([
-            'date' => $date,
+            'date' => Carbon::parse($date)->format('Y-m-d'),
             'spot_id' => $spot->id
         ])->count();
 
