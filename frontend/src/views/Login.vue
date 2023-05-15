@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from '@vue/reactivity'
+import { ref } from 'vue'
 import Api from '../services/api'
 import {useRouter} from 'vue-router'
 
@@ -8,6 +8,7 @@ let user = ref({
     password: ''
 })
 const router = useRouter()
+const first = ref(null)
 
 async function login(e) {
     const res = await new Api('/auth/login', 'POST', user.value).login()
@@ -18,12 +19,17 @@ async function login(e) {
         localStorage.setItem('isLogin', 'true')
         localStorage.setItem('token', data.token)
         localStorage.setItem('username', data.name)
+        localStorage.setItem('region', data.regional.district)
 
         router.push('/dashboard')
         
     } else {
         alert(data.message)
-        e.target.reset()
+        user.value = {
+            id_card_number: '',
+            password: ''
+        }
+        first.value.focus()
     }
 }
 
@@ -38,7 +44,7 @@ async function login(e) {
               <div class="card-body">
                   <div class="form-group row align-items-center">
                       <div class="col-4 text-right">ID Card Number</div>
-                      <div class="col-8"><input type="text" class="form-control" v-model="user.id_card_number"></div>
+                      <div class="col-8"><input type="text" class="form-control" ref="first" v-model="user.id_card_number" autofocus></div>
                   </div>
                   <div class="form-group row align-items-center">
                       <div class="col-4 text-right">Password</div>

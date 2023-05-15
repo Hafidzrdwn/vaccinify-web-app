@@ -1,4 +1,7 @@
 /* Move down content because we have a fixed navbar that is 3.5rem tall */
+html, * {
+    scroll-behavior: smooth;
+}
 body {
     padding-top: 3.5rem;
 }
@@ -16,7 +19,7 @@ body {
 }
 .unavailable {
     opacity: 0.5;
-    cursor: default;
+    pointer-events: none;
 }
 .slot {
     background: #FAFAFA;

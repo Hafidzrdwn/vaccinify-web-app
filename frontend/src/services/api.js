@@ -35,4 +35,34 @@ export default class Api {
       ...fetchConf
     })
   }
+
+  requestConsultation() {
+    return fetch(base(this.url), {
+      method: this.method,
+      body: JSON.stringify(this.data),
+      ...fetchConf
+    })
+  }
+
+  getSpots() {
+    return fetch(base(this.url), {
+      method: this.method,
+      ...fetchConf
+    })
+  }
+
+  getDetailSpot() {
+    return fetch(base(this.url), {
+      method: this.method,
+      ...fetchConf
+    })
+  }
+
+  requestVaccination() {
+    return fetch(base(this.url), {
+      method: this.method,
+      body: JSON.stringify(this.data),
+      ...fetchConf
+    })
+  }
 }

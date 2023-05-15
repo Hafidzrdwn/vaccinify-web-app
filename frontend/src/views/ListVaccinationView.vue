@@ -44,7 +44,7 @@ onBeforeMount( async () => {
 </script>
 <template>
 <!-- S: List Vaccination Section -->
-    <section class="consultation-section mb-5">
+    <section class="consultation-section mb-5 pb-5">
         <SectionHeader title="My Vaccinations" />
         <div class="section-body" v-if="!isLoading">
             <div class="row mb-4">
@@ -62,7 +62,7 @@ onBeforeMount( async () => {
                             <h5 class="mb-0">First Vaccination</h5>
                         </div>
                         <div class="card-body">
-                            <a href="">+ Register vaccination</a>
+                            <router-link :to="{ name: 'Vaccination Spots', params: {dose: 1} }">+ Register vaccination</router-link>
                         </div>
                     </div>
                 </div>
@@ -117,7 +117,7 @@ onBeforeMount( async () => {
                             <h5 class="mb-0">Second Vaccination</h5>
                         </div>
                         <div class="card-body">
-                            <a href="">+ Register vaccination</a>
+                            <router-link :to="{ name: 'Vaccination Spots', params: { dose: 2 } }">+ Register vaccination</router-link>
                         </div>
                     </div>
                 </div>

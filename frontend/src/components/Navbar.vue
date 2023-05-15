@@ -26,6 +26,7 @@ async function logout() {
         if (res.status == 200) {
             localStorage.setItem('isLogin', 'false')
             localStorage.removeItem('username')
+            localStorage.removeItem('region')
             localStorage.removeItem('token')
             alert('Logout Success!!')
             router.push('/login')
@@ -38,7 +39,7 @@ async function logout() {
 <template>
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
       <div class="container">
-          <router-link class="navbar-brand" to="/">Vaccination Platform</router-link>
+          <span class="navbar-brand">Vaccination Platform</span>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
           </button>
@@ -51,7 +52,7 @@ async function logout() {
             </ul>
             <ul class="navbar-nav ml-auto" v-if="isLogin">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">{{ username }}</a>
+                    <router-link class="nav-link active" to="/dashboard">{{ username }}</router-link>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" @click.prevent="logout">Logout</a>
