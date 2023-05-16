@@ -28,7 +28,8 @@ async function logout() {
             localStorage.removeItem('username')
             localStorage.removeItem('region')
             localStorage.removeItem('token')
-            alert('Logout Success!!')
+
+            localStorage.setItem('logoutstate', true)
             router.push('/login')
         } else {
             alert(data.message)

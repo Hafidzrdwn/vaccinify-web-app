@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import Api from '../services/api'
-import {useRouter} from 'vue-router'
+import { useRouter } from 'vue-router'
+import Alert from '../components/Alert.vue'
 
 let user = ref({
     id_card_number: '',
@@ -9,22 +10,32 @@ let user = ref({
 })
 const router = useRouter()
 const first = ref(null)
+const alertMsg = ref({
+    type: '',
+    text: ''
+})
 
 async function login(e) {
     const res = await new Api('/auth/login', 'POST', user.value).login()
     const data = await res.json()
 
     if (res.status == 200) {
-        alert('Login Success!!')
+        alertMsg.value.type = 'success'
+        alertMsg.value.text = 'Login Success!'
+
         localStorage.setItem('isLogin', 'true')
         localStorage.setItem('token', data.token)
         localStorage.setItem('username', data.name)
         localStorage.setItem('region', data.regional.district)
 
-        router.push('/dashboard')
+        setTimeout(() => {
+            router.push('/dashboard')
+        }, 1000);
         
     } else {
-        alert(data.message)
+        alertMsg.value.type = 'danger'
+        if(typeof data.message == 'object') alertMsg.value.text = 'id_card_number and password input are required!'
+        else alertMsg.value.text = data.message
         user.value = {
             id_card_number: '',
             password: ''
@@ -33,10 +44,27 @@ async function login(e) {
     }
 }
 
+onMounted(() => {
+    if (localStorage.getItem('logoutstate')) {
+        alertMsg.value.type = 'success'
+        alertMsg.value.text = 'Logout Success!'
+        setTimeout(() => {
+            alertMsg.value = {
+                type: '',
+                text: ''
+            }
+            localStorage.removeItem('logoutstate')
+        }, 1200);
+    }
+
+    first.value.focus()
+})
+
 </script>
 <template>
-  <div class="row justify-content-center">
-      <div class="col-md-6">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+          <Alert :type="alertMsg.type" :text="alertMsg.text" v-if="alertMsg.text" />
           <form class="card card-default" @submit.prevent="login" autocomplete="off">
               <div class="card-header">
                   <h4 class="mb-0">Login</h4>
